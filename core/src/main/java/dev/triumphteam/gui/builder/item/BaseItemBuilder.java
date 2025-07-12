@@ -32,6 +32,7 @@ import dev.triumphteam.gui.components.util.VersionHelper;
 import dev.triumphteam.gui.guis.GuiItem;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -145,11 +146,7 @@ public abstract class BaseItemBuilder<B extends BaseItemBuilder<B>> {
             return (B) this;
         }
 
-        try {
-            DISPLAY_NAME_FIELD.set(meta, this.serializeComponent(name));
-        } catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+        meta.displayName(name);
 
         return (B) this;
     }
@@ -198,16 +195,7 @@ public abstract class BaseItemBuilder<B extends BaseItemBuilder<B>> {
             return (B) this;
         }
 
-        final List<Object> jsonLore = lore.stream()
-            .filter(Objects::nonNull)
-            .map(this::serializeComponent)
-            .collect(Collectors.toList());
-
-        try {
-            LORE_FIELD.set(meta, jsonLore);
-        } catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+        meta.lore(lore);
 
         return (B) this;
     }

@@ -6,18 +6,15 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://libraries.minecraft.net/")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
     compileOnly("com.mojang:authlib:1.5.25")
-    compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT")
 
     compileOnly("org.jetbrains:annotations:21.0.1")
 
-    val adventureVersion = "4.17.0"
-    api("net.kyori:adventure-api:$adventureVersion")
-    api("net.kyori:adventure-text-serializer-legacy:$adventureVersion")
-    api("net.kyori:adventure-text-serializer-gson:$adventureVersion")
     api("net.kyori:adventure-platform-bukkit:4.3.4")
 }
 
@@ -31,8 +28,8 @@ license {
 val javaComponent: SoftwareComponent = components["java"]
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks {
@@ -94,22 +91,12 @@ tasks {
 
         repositories {
             maven {
-                if (version.toString().contains("SNAPSHOT")) {
-                    credentials {
-                        username = System.getenv("REPO_USER")
-                        password = System.getenv("REPO_PASS")
-                    }
-
-                    url = uri("https://repo.triumphteam.dev/snapshots/")
-                    return@maven
-                }
+                url = uri(findProperty("myMavenRepoWriteUrl") ?: "")
 
                 credentials {
-                    username = project.providers.gradleProperty("ossrh.username").get()
-                    password = project.providers.gradleProperty("ossrh.password").get()
+                    username = findProperty("myMavenRepoWriteUsername").toString()
+                    password = findProperty("myMavenRepoWritePassword").toString()
                 }
-
-                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             }
         }
 
@@ -121,12 +108,12 @@ tasks {
         val signingPassword = System.getenv("GPG_PASS")
         val secretKey = System.getenv("GPG_SECRET_KEY")
         useInMemoryPgpKeys(signingKey, secretKey, signingPassword)*/
-        sign(publishing.publications["maven"])
+        //sign(publishing.publications["maven"])
     }
 
     withType<JavaCompile> {
-        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+        sourceCompatibility = JavaVersion.VERSION_21.toString()
+        targetCompatibility = JavaVersion.VERSION_21.toString()
         options.encoding = "UTF-8"
     }
 }
